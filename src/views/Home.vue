@@ -35,7 +35,7 @@ export default {
         });
         messages.value.push({ text: data.answer, isUser: false });
       } catch (error) {
-        console.error(error);
+        throw new error;
       }
     };
 

@@ -27,16 +27,14 @@ export async function handler(event, context) {
         }
       }
     );
-console.log('response.data', response.data)
+
     const answer = response.data.choices[0].message.content;
-    console.log(response.data);
     return {
       statusCode: 200,
       body: JSON.stringify({ answer: answer })
     };
   
   } catch (error) {
-    console.log(error.response.data);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: error.data })
