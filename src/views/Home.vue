@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
-    <ChatLog :chatHistory="messages" :showTypingIndicator="showTyping" />
-    <PromptCard :prompt="prompt" @response-submitted="handleUserResponse" />
+  <div class="surface">
+    <ChatLog :chatHistory="messages" :showTypingIndicator="showTypingIndicator.value" />
+    <PromptCard @response-submitted="handleUserResponse" />
   </div>
 </template>
 
@@ -18,52 +18,49 @@ export default {
     PromptCard,
   },
   setup() {
+    const showTypingIndicator = ref(false);
+    const messages = ref([
+      {
+        "role": "system",
+        "content": "You are John Waters, the funny shopkeeper. Goal: sell something. Not clear what. Give info each time. If 4-5 serious attempts to buy, sell. Otherwise, tease, add how you're a portfolio piece for Erik and players have played better. If plays 8-9 responses, give item free."
+      }]);
 
-    let showTyping = ref(false);
-    const greeting = 'Well, well, well, if it isn\'t my favorite persistent customer. What brings you back to my little den of oddities and eccentricities? Can\'t get enough of my charming company, I presume? Oh, don\'t roll your eyes at me, darling. I see that look you\'re giving me.';
-    const messages = ref([{ text: greeting, isUser: false }]);
-    const handleUserResponse = (response) => {
-      showTyping = true;
-      messages.value.push({ text: response, isUser: true });
-      getBotResponse(response);
-    };
 
-    const getBotResponse = async (userResponse) => {
+    const getBotResponse = async (messages) => {
+
+      console.log('messages', messages.value);
+      showTypingIndicator.value = true;
+
+      // messages.value.push({ role: "assistant", content: "rolling!" });
+
       try {
         const { data } = await axios.post('/.netlify/functions/ask', {
-          prompt: userResponse,
+          messages: messages.value,
         });
-        messages.value.push({ text: data.answer, isUser: false });
+
+        messages.value.push({ role: "assistant", content: data.answer });
       } catch (error) {
-        throw new error;
+        throw new Error(error);
       }
+      finally {
+        showTypingIndicator.value = false;
+      }
+
+    };
+
+    getBotResponse(messages);
+
+    const handleUserResponse = (response) => {
+      showTypingIndicator.value = true;
+      messages.value.push({ role: "user", content: response });
+      getBotResponse(messages);
     };
 
     return {
       messages,
-      prompt,
+      showTypingIndicator,
       handleUserResponse,
     };
   },
 };
 </script>
-
-<style scoped>
-.home {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: initial;
-}
-
-.chat-log {
-  margin-top: 20px;
-}
-
-body {
-  font-family: helvetica;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-</style>

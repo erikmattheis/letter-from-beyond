@@ -3,23 +3,28 @@ import axios from 'axios';
 
 config();
 
+const id = () => {
+  const date = Date.now().toString(36);
+  const rnd = Math.random().toString(36).substr(2);
+  return date + rnd;
+};
+
+
+let gameDescribed = false;
+
 export async function handler(event, context) {
   try {
 
-    const prompt = JSON.parse(event.body).prompt;
+    const messages = JSON.parse(event.body).messages;
     const API_KEY = process.env.OPENAI_API_KEY;
 
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-     "model": "gpt-3.5-turbo",
-     "messages": [{"role":"system",
-     "content":"You are the intelligence in a chat game. You are John Waters improvising a role as an annoying butfunny shopkeeper. The user is your customer. The goal of the game is to get you to sell something to them. It is not clear what you are selling but you give a little more info each exchange."},
-      {"role": "assistant",
-      "content": "Well, well, well, if it isn\'t my favorite persistent customer. What brings you back to my little den of oddities and eccentricities? Can\'t get enough of my charming company, I presume? Oh, don\'t roll your eyes at me, darling. I see that look you\'re giving me."},
-      {"role": "user", "content": prompt}],
-     "temperature": 0.7
-    },
+        "model": "gpt-3.5-turbo",
+        "messages": messages,
+        "temperature": 0.7
+      },
       {
         headers: {
           'Content-Type': 'application/json',
@@ -33,11 +38,27 @@ export async function handler(event, context) {
       statusCode: 200,
       body: JSON.stringify({ answer: answer })
     };
-  
+
   } catch (error) {
+    console.log(error)
+    let errorMessage;
+
+    if (error.response && error.response.data && error.response.data.error) {
+      errorMessage = error.response.data.error.message;
+    } else if (error && error.message) {
+      errorMessage = error.message;
+    }
+    else if (error) {
+      errorMessage = error;
+    } else {
+      errorMessage = 'An unknown error occurred.';
+    }
+
+    console.log(errorMessage);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.data })
+      body: JSON.stringify({ error: errorMessage })
     };
+
   }
 }

@@ -1,14 +1,21 @@
 <template>
   <div class="chat scroll">
-
-
     <template v-for="(message, index) in chatHistory" :key="index">
       <div
+        v-if="message.role !== 'system'"
         class="messages"
-        :class="message.isUser ? 'mine' : 'yours'">
+        :class="message.role === 'user' ? 'mine' : 'yours'">
         <div
           class="message last">
-          {{ message.text }}
+          {{ message.content }}
+        </div>
+      </div>
+
+      <div v-if="showTypingIndicator" class="messages yours">
+        <div class="message last">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
         </div>
       </div>
     </template>
@@ -32,11 +39,10 @@ export default {
 <style scoped>
 .chat {
   width: 400px;
-  background-color: #FFF;
-  border: solid 1px #EEE;
   display: flex;
   flex-direction: column;
   padding: 10px;
+  border-bottom: 0px;
 }
 
 .messages {
@@ -83,7 +89,7 @@ export default {
   left: -10px;
   width: 10px;
   height: 20px;
-  background: white;
+  background: #fff;
   border-bottom-right-radius: 10px;
 }
 
@@ -92,7 +98,7 @@ export default {
 }
 
 .mine .message {
-  color: white;
+  color: #fff;
   margin-left: 25%;
   background: linear-gradient(to bottom, #00D0EA 0%, #0085D1 100%);
   background-attachment: fixed;
@@ -120,7 +126,7 @@ export default {
   right: -10px;
   width: 10px;
   height: 20px;
-  background: white;
+  background: #fff;
   border-bottom-left-radius: 10px;
 }
 </style>
