@@ -28,10 +28,27 @@ export default {
     chatHistory: Array,
     showTypingIndicator: Boolean,
   },
+  watch: {
+    chatHistory: {
+      handler() {
+        this.$nextTick(() => {
+          this.scrollToBottom();
+        });
+      },
+      deep: true
+    }
+  },
   methods: {
     handleScroll() {
       // Logic to remove items out of view to improve performance
     },
+    scrollToBottom() {
+      console.log("scrolling");
+      this.$nextTick(() => {
+        const container = document.querySelector(".chat");
+        container.scrollTop = container.scrollHeight;
+      });
+    }
   },
 };
 </script>

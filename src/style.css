@@ -57,14 +57,13 @@ button:focus-visible {
   padding: 20px;
 }
 
-.surface {
-  height: 747px;
+.chat {
+  height: calc(100vh - 120px);
   /* border-box contents would be 420px fixed, this is the proportional height for 9:16 */
   max-height: calc(100vh - 120px);
   background-color: #fff;
   margin: 0 auto;
-  padding: 20px;
-  padding-bottom: 60px;
+  padding: 10px;
   text-align: initial;
   display: flex;
   flex-direction: column;
@@ -80,9 +79,7 @@ button:focus-visible {
 }
 
 .bottom {
-  position: sticky;
-  bottom: 0;
-  background-color: #fff;
+  height: 120px;
 }
 
 input {
