@@ -1,6 +1,5 @@
 <template>
   <div class="surface">
-    xxx
     <ChatLog :chatHistory="chatHistory" :showTypingIndicator="typingIndicator" />
     <PromptCard @response-submitted="handleUserResponse" />
   </div>
